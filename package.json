@@ -4,7 +4,7 @@
   "description": "email notification ",
   "main": "index.js",
   "scripts": {
-    "run": "node index.js"
+    "test": "node index.js"
   },
   "repository": {
     "type": "git",

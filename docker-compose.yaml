@@ -4,7 +4,10 @@ services:
     container_name: smtp-server
     image: smtp-server:latest
     ports:
-      - '25:25'
+      - '8025:8025'
     env_file:
       - ./deployments/production/server.env
+    environment:
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     
