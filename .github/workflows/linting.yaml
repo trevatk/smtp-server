@@ -25,4 +25,4 @@ jobs:
       with:
         files: src/
 
-    - run: eslint . --ext .js
+    - run: make lint
