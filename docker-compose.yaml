@@ -8,6 +8,6 @@ services:
     env_file:
       - ./deployments/production/server.env
     environment:
-      - SMTP_USERNAME=${secrets.SMTP_USERNAME}
-      - SMTP_PASSWORD=${secrets.SMTP_PASSWORD}
+      - SMTP_USERNAME=$${secrets.SMTP_USERNAME}
+      - SMTP_PASSWORD=$${secrets.SMTP_PASSWORD}
     
