@@ -18,11 +18,8 @@ jobs:
       with: 
         node-version: "18.x"
 
-    - name: Install dependencies
+    - name: install dependencies
       run: npm install
 
-    - uses: stefanoeb/eslint-action@1.0.2
-      with:
-        files: src/
-
-    - run: make lint
+    - name: lint project
+      run: make lint
