@@ -2,6 +2,7 @@
 
 const SMTPServer = require('smtp-server').SMTPServer;
 const pino = require('pino')();
+const process = require('process');
 
 /**
  * SMTP wrapper class
@@ -31,9 +32,12 @@ class Server {
 
   /**
    * Run SMTP server on specific host and port
+   * @param {string} host
+   * @param {string} port
+   * @return {*}
    */
-  listen() {
-    this.server.listen(this.port, undefined, this.onListen);
+  listen(host, port) {
+    return this.server.listen(port, undefined, this.onListen(host, port));
   }
 
   /**
@@ -84,7 +88,12 @@ class Server {
    * @param {*} session
    * @param {*} callback
    */
-  incoming(stream, session, callback) {}
+  incoming(stream, session, callback) {
+    stream.pipe(process.stdout);
+    stream.on('end', () => {
+      return callback(null, 'message queued');
+    });
+  }
 
   /**
    * SMTP server logic and handle error emitted
@@ -96,9 +105,11 @@ class Server {
 
   /**
    * SMTP successfuly begin listening on server
+   * @param {string} host
+   * @param {string} port
    */
-  onListen() {
-    pino.info(`start smtp-server on %s:%d`, this.host, this.port);
+  onListen(host, port) {
+    pino.info('start smtp-server on %s:%d', host, port);
   }
 }
 

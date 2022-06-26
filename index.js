@@ -6,9 +6,9 @@ const Server = require('./src/smtp_server').Server;
  * Run SMTP microservice
  */
 function main() {
-  const server = new Server();
+  const app = new Server();
 
-  server.listen();
+  app.listen(app.host, app.port);
 }
 
 main();
