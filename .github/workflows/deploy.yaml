@@ -15,8 +15,5 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASSWORD }}
-        port: 22
-        script: cd smtp-server && \
-                git checkout prod-v0.1.0 && \
-                make build && \
-                make deploy
+        port: ${{ secrets.SSH_PORT }}
+        script: cd smtp-server && git checkout prod-v0.1.0 && make build && make deploy 
