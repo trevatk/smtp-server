@@ -1,0 +1,10 @@
+version: '3.5'
+services:
+  smtp-server:
+    container_name: smtp-server
+    image: smtp-server:latest
+    ports:
+      - '25:25'
+    env_file:
+      - ./deployments/production/server.env
+    
