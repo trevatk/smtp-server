@@ -1,12 +1,14 @@
 'use strict';
 
-var Server = require('./src/smtp_server').Server;
+const Server = require('./src/smtp_server').Server;
 
+/**
+ * Run SMTP microservice
+ */
 function main() {
+  const server = new Server();
 
-    var server = new Server();
-    
-    server.listen();
+  server.listen();
 }
 
 main();

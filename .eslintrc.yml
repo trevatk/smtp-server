@@ -8,7 +8,6 @@ extends:
 parserOptions:
   ecmaVersion: latest
 rules: {
-    'hapi/no-arrowception': 2,
     'arrow-parens': [2, 'always'],
     'arrow-spacing': [2, { before: true, after: true }],
     'constructor-super': 2,

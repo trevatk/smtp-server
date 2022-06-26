@@ -1,50 +1,107 @@
 'use strict';
 
-const SMTPServer = require("smtp-server").SMTPServer;
+const SMTPServer = require('smtp-server').SMTPServer;
 const pino = require('pino')();
 
+/**
+ * SMTP wrapper class
+ */
 class Server {
+  /**
+   * Class initialization
+   * @constructor
+   */
+  constructor() {
+    this.port = process.env.SERVER_PORT || 8025;
+    this.host = process.env.SERVER_HOST || '0.0.0.0';
 
-    constructor() {
+    this.username = process.env.STMP_USERNAME || 'admin';
+    this.password = process.env.SMTP_PASSWORD || 'P@ssw0rd#123$';
 
-        this.port = process.env.SERVER_PORT || 8025;
-        this.host = process.env.SERVER_HOST || '0.0.0.0';
+    this.server = new SMTPServer({
+      authMethods: ['CRAM-MD5'],
+      onAuth: this.auth,
+      onConnect: this.connect,
+      onData: this.incoming,
+    });
 
-        this.server = new SMTPServer({
-            authMethods: ["CRAM-MD5"],
-            onAuth: this.auth,
-            onConnect: this.connect,
-            onData: this.incoming,
-        });
+    this.server.on('error', this.onError);
+    this.server.on('close', this.close);
+  }
 
-        this.server.on('error', this.onError);
-        this.server.on('close', this.close);
+  /**
+   * Run SMTP server on specific host and port
+   */
+  listen() {
+    this.server.listen(this.port, undefined, this.onListen);
+  }
+
+  /**
+   * Validate username/password provided before creating a connection
+   * @param {*} auth
+   * @param {*} session
+   * @param {*} callback
+   * @return {*} callback
+   */
+  auth(auth, session, callback) {
+    if (auth.username != this.username || auth.password != this.password) {
+      pino.error('invalid username or password provided');
+      return callback(new Error('invalid username or password'));
     }
 
-    listen() {
-        return this.server.listen(this.port, undefined, this.onListen);
+    return callback(null, {user: this.username});
+  }
+
+  /**
+   * Validate and initialize client connection
+   * @param {*} session
+   * @param {*} callback
+   * @return {*} callback
+   */
+  connect(session, callback) {
+    if (session.remoteAddress != '127.0.0.1' ||
+      session.remoteAddress != 'localhost') {
+      pino.error('invalid remote host');
+      return callback('invalid remote host');
     }
 
-    auth(auth, session, callback) {}
+    return callback();
+  }
 
-    connect(session, callback) {}
+  /**
+   * Gracefully shutdown SMTP server
+   * @param {*} session
+   */
+  close(session) {
+    pino.info('shutdown smtp-server');
+    pino.info(session);
+    pino.flush();
+  }
 
-    close(session) {
-        pino.info('shutdown smtp-server')
-        pino.flush();
-    }
+  /**
+   * Validate and process incoming request
+   * @param {*} stream
+   * @param {*} session
+   * @param {*} callback
+   */
+  incoming(stream, session, callback) {}
 
-    incoming(stream, session, callback) {}
+  /**
+   * SMTP server logic and handle error emitted
+   * @param {string} error
+   */
+  onError(error) {
+    pino.error('err: %s', error);
+  }
 
-    onError(error) {
-        pino.error('err: %s', error)
-    }
-
-    onListen() {
-        pino.info(`start smtp-server on %s:%d`, this.host, this.port);
-    }
+  /**
+   * SMTP successfuly begin listening on server
+   */
+  onListen() {
+    pino.info(`start smtp-server on %s:%d`, this.host, this.port);
+  }
 }
 
 module.exports = {
-    Server
+  Server,
 };
